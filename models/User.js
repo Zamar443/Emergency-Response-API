@@ -4,7 +4,7 @@ const userSchema = new mongoose.Schema({
   name: String,
   phone: String,
   password: String,
-  role: { type: String, enum: ["user", "responder"], default: "user" },
+  role: { type: String, enum: ["User", "responder"], default: "User" },
   location: {
   type: {
     type: String,
