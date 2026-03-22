@@ -1,5 +1,8 @@
 # Emergency-Response-API
 
+ *Note*: This app runs on a free Render instance. 
+It may take 30–60 seconds to wake up on first load.
+
 ##  Overview
 
 In many urban areas, especially high-density cities, emergency response is often delayed due to poor coordination and lack of real-time visibility.
