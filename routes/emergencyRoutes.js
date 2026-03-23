@@ -99,9 +99,10 @@
  */
 const router2 = require("express").Router();
 const auth = require("../middlewares/auth");
-const { reportEmergency, getStats } = require("../controllers/emergencyController");
+const { reportEmergency, getStats, getResponders } = require("../controllers/emergencyController");
 
 router2.post("/report", auth, reportEmergency);
 router2.get("/stats", getStats);
+router2.get("/responders", getResponders);
 
 module.exports = router2;
