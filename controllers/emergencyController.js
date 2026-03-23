@@ -1,59 +1,59 @@
+const User = require("../models/User");
 const Emergency = require("../models/Emergency");
 
-const getPriority = (type) => {
-  if (type === "heart attack") return "critical";
-  if (type === "accident") return "medium";
-  return "low";
-};
-
+// Report a new emergency
 exports.reportEmergency = async (req, res) => {
-  const { type, latitude, longitude } = req.body;
-
-  const emergency = await Emergency.create({
-    user: req.user.id,
-    type,
-    priority: getPriority(type),
-    location: {
-      type: "Point",
-      coordinates: [longitude, latitude]
+  try {
+    const { type, latitude, longitude } = req.body;
+    if (!type || !latitude || !longitude) {
+      return res.status(400).json({ message: "Missing required fields" });
     }
-  });
 
-  await assignResponder(emergency);
-  res.json(emergency);
+    const emergency = new Emergency({
+      type,
+      location: { type: "Point", coordinates: [longitude, latitude] },
+      reportedBy: req.user.id,
+      status: "pending",
+    });
+
+    await emergency.save();
+
+    // Optional: assign responders logic here
+    // Example: Emit emergency to responders via socket.io
+    if (global.io) {
+      global.io.emit("newEmergency", emergency);
+    }
+
+    res.status(201).json({ message: "Emergency reported", emergency });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: error.message });
+  }
 };
 
+// Get emergency statistics
 exports.getStats = async (req, res) => {
-  const total = await Emergency.countDocuments();
-  const resolved = await Emergency.countDocuments({ status: "resolved" });
-  const pending = await Emergency.countDocuments({ status: "pending" });
+  try {
+    const total = await Emergency.countDocuments();
+    const pending = await Emergency.countDocuments({ status: "pending" });
+    const resolved = await Emergency.countDocuments({ status: "resolved" });
 
-  res.json({ total, resolved, pending });
+    res.status(200).json({ total, pending, resolved });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: error.message });
+  }
 };
 
-// =========================
-// src/services/dispatchService.js
-// =========================
-const User2 = require("../models/User");
-
-exports.assignResponder = async (emergency) => {
-  const responders = await User2.find({
-    role: "responder",
-    location: {
-      $near: {
-        $geometry: emergency.location,
-        $maxDistance: 5000
-      }
-    }
-  });
-
-  if (!responders.length) return;
-
-  const nearest = responders[0];
-
-  emergency.responder = nearest._id;
-  emergency.status = "assigned";
-  await emergency.save();
-
-  global.io.to(nearest._id.toString()).emit("newEmergency", emergency);
+// Get list of all responders
+exports.getResponders = async (req, res) => {
+  try {
+    const responders = await User.find({ role: "responder" }).select(
+      "name phone status"
+    );
+    res.status(200).json(responders);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: error.message });
+  }
 };
