@@ -1,5 +1,20 @@
 # Emergency-Response-API
 
+HOW TO TEST THE APP.
+
+1. Open https://emergency-response-api.onrender.com
+
+
+2. Open API Documentation (Swagger)
+
+ https://emergency-response-api.onrender.com/api-docs
+
+ 3. Steps:
+Register a user
+Login and copy token
+Use /api/emergency/report to create an emergency
+Watch real-time updates on the map
+
  *Note*: This app runs on a free Render instance. 
 It may take 30–60 seconds to wake up on first load.
 
