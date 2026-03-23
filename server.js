@@ -13,11 +13,11 @@ const swaggerOptions = {
     },
     servers: [
       {
-        url: "http://localhost:5000",
+        url: process.env.BASE_URL || "http://localhost:5000",
       },
     ],
   },
-  apis: ["./routes/*.js"], // <-- Make sure this points to your routes folder
+  apis: ["./routes/*.js"],
 };
 
 const swaggerSpecs = swaggerJsdoc(swaggerOptions);
