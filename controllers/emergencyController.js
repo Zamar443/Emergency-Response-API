@@ -49,11 +49,12 @@ exports.getStats = async (req, res) => {
 exports.getResponders = async (req, res) => {
   try {
     const responders = await User.find({ role: "responder" }).select(
-      "name phone status"
+      "name phone role"
     );
+
     res.status(200).json(responders);
   } catch (error) {
-    console.error(error);
+    console.error("GET RESPONDERS ERROR:", error);
     res.status(500).json({ message: error.message });
   }
 };
